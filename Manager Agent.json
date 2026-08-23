@@ -1,0 +1,252 @@
+{
+  "name": "Manager Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f89a7e77-bfb6-4b4a-b4fb-313963fc7644",
+      "name": "When chat message received",
+      "webhookId": "24298164-fbaf-43a1-be41-c7eab63603a2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpYou are a manager. Decide which specialist agent (research_agent, writer_agent, or support_agent) should handle each request, then combine their answers into one clear reply for the user.ful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "91ae6551-20b7-41ac-8876-100f626e695e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        128,
+        192
+      ],
+      "id": "b7c48d62-fca5-42ab-956d-742314581d7d",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qIEsVLacnKNi1G3s",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use this to look up current information or facts online.",
+        "workflowId": {
+          "__rl": true,
+          "value": "J9q8lpiQsnKQfX4u",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/J9q8lpiQsnKQfX4u",
+          "cachedResultName": "Researcher"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "chatInput"
+          ],
+          "schema": [
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        240
+      ],
+      "id": "8a366ee8-d9c4-45a9-b82c-171a0f82b3ca",
+      "name": "Call 'Researcher'"
+    },
+    {
+      "parameters": {
+        "description": "Use this to turn information into well-written text",
+        "workflowId": {
+          "__rl": true,
+          "value": "9c3hIvD6W3ouQ6d6",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9c3hIvD6W3ouQ6d6",
+          "cachedResultName": "Writer"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "chatInput"
+          ],
+          "schema": [
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        256
+      ],
+      "id": "a8d4a2e1-b04c-4682-a3e1-0bb80d35da9a",
+      "name": "Call 'Writer'"
+    },
+    {
+      "parameters": {
+        "description": "Use this to answer questions about our uploaded documents",
+        "workflowId": {
+          "__rl": true,
+          "value": "RLb3R2SYeiWRtPIO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/RLb3R2SYeiWRtPIO",
+          "cachedResultName": "Support"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatInput": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('chatInput', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "chatInput"
+          ],
+          "schema": [
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        224
+      ],
+      "id": "c536c2b9-9f77-42b0-889e-b80b66b7c69a",
+      "name": "Call 'Support'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Researcher'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Writer'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Support'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "dbf0b00c-db1e-4252-b45a-db753690c263",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9c794027fae09dca716a68987897a4150e2072c2b137a9ee2929bbfa85d70dd"
+  },
+  "nodeGroups": [],
+  "id": "cRSvzxPg1WQu63wY",
+  "tags": []
+}

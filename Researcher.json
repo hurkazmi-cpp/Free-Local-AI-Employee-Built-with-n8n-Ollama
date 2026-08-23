@@ -1,0 +1,254 @@
+{
+  "name": "Researcher",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a friendly helper. Answer questions simply and honestly."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2271bd21-8c6c-49aa-91f5-2ffddb04ddfe",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        128,
+        192
+      ],
+      "id": "c3858408-16b5-4432-ba79-38b4a0b1a2b7",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qIEsVLacnKNi1G3s",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        400,
+        224
+      ],
+      "id": "227c239f-d08b-4479-85f0-9ae1ecf8c961",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "url": "https://open-meteo.com/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        528,
+        256
+      ],
+      "id": "65a0749d-ced7-43a6-9a8d-46ecac19d6d8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "formTitle": "pdf uploader",
+        "formDescription": "upload your pdf here",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "upload PDF",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        512
+      ],
+      "id": "3b75a981-8da9-46dc-9c48-322ec329d2e6",
+      "name": "On form submission",
+      "webhookId": "21a8a45d-7566-4800-b041-fb4cb6933aa7"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "my_documents",
+          "mode": "id"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        512
+      ],
+      "id": "b09bdad2-2695-46e9-be64-f6f06c0f401b",
+      "name": "Simple Vector Store"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        720
+      ],
+      "id": "f6eb6b58-5a8f-46b0-8793-80f3e6df3344",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        320,
+        720
+      ],
+      "id": "08c6b677-fbd9-4be8-ad4c-26135cace0e5",
+      "name": "Embeddings Ollama1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qIEsVLacnKNi1G3s",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "chatInput",
+              "type": "any"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "767003c6-66b6-4c49-bd19-1a7bf67753dc",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d8242611-3784-44ba-bdcc-554f47c634de",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9c794027fae09dca716a68987897a4150e2072c2b137a9ee2929bbfa85d70dd"
+  },
+  "nodeGroups": [],
+  "id": "J9q8lpiQsnKQfX4u",
+  "tags": []
+}
